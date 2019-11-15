@@ -3,11 +3,6 @@ sudo apt install git
 sudo apt  install cmake
 git clone --recursive https://github.com/obsproject/obs-studio.git
 git clone https://github.com/CatxFish/obs-v4l2sink.git
-cd obs-v4l2sink
-mkdir build && cd build
-cmake -DLIBOBS_INCLUDE_DIR="../../obs-studio/libobs" -DCMAKE_INSTALL_PREFIX=/usr ..
-make -j4
-sudo make install
 
 # Install packages
 sudo apt install v4l-utils v4l2loopback-dkms v4l2loopback-utils ffmpeg obs-studio
@@ -19,9 +14,6 @@ sudo modprobe v4l2loopback devices=1 card_label="loopback 1" exclusive_caps=1,1,
 # Create fifo to channel obs output to ffmpeg
 mkfifo /tmp/pipe
 
-# Open OBS, go to Settings->Output->Recording, set Type to "Custom Output (FFmpeg)", Container Format to "flv"; Apply and Start Recording
-obs
-
 # Send obs output to the virtual device
 ffmpeg -re -f live_flv -i "/tmp/pipe" -f v4l2 /dev/video1
 
@@ -29,8 +21,6 @@ sudo apt install v4l-utils v4l2loopback-utils obs-studio v4l2loopback-dkms
 sudo rmmod v4l2loopback #if you need to reload it for some reason
 sudo modprobe v4l2loopback devices=1 card_label="loopback 1" exclusive_caps=1,1,1,1,1,1,1,1
 ffmpeg -re -f live_flv -i udp://localhost:12345 -f v4l2 /dev/video1
-
-
 
 v4l2-ctl --list-formats
 
